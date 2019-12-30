@@ -18,6 +18,7 @@ import Typography from "@material-ui/core/Typography";
 import {Trans} from "react-i18next";
 import ToastService from "./Services/ToastService";
 import CustomError from "./Entities/CustomError";
+import UserProvider from "./Services/UserProvider";
 
 
 const useStyles = (theme : any) => ({
@@ -68,6 +69,8 @@ class DashBoard extends Component
 
     protected profileService : ProfileService;
 
+    protected userProvider : UserProvider;
+
     /**
      *
      * @param props
@@ -76,6 +79,8 @@ class DashBoard extends Component
         super(props);
 
         this.profileService = props.profileService;
+
+        this.userProvider = props.userProvider;
 
         this.profileService.setAuthHeader();
 
@@ -105,6 +110,15 @@ class DashBoard extends Component
             if(response.status == 404) {
                 this.setState({profiles : [new Profile({})]});
                 this.setState({alert : { type : 'error', 'message' : response.error}});
+            }
+            if(response.status == 401) {
+                // Reload profiles, the token is probably refreshed with load
+                if(response.error == 'Expired JWT Token') {
+                    this.userProvider.refreshToken().then(() => {
+                        this.profileService.setAuthHeader();
+                        this.loadProfiles();
+                    });
+                }
             }
 
             if(response.status == 406) {

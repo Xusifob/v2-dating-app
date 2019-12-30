@@ -1,6 +1,7 @@
 import APIService from "./APIService";
 import URLS from "../Resources/URLS";
 import User from "../Entities/User";
+import CustomError from "../Entities/CustomError";
 
 
 /**
@@ -101,19 +102,27 @@ export default class UserProvider extends APIService
     }
 
 
-    public refreshToken()
+
+
+    public refreshToken() : Promise<string>
     {
 
-        let token = UserProvider.refresh_token;
+        return new Promise(((resolve, reject) => {
 
-        this.post(URLS.REFRESH_TOKEN,{refresh_token : token}).then((response : any) => {
+            let token = UserProvider.refresh_token;
 
-            if(response) {
-                this.setAuthHeader();
-                UserProvider.token = response.token;
-                UserProvider.refresh_token = response.refresh_token;
-            }
-        })
+            this.post(URLS.REFRESH_TOKEN, {refresh_token: token}).then((response: any) => {
+
+                if (response) {
+                    this.setAuthHeader();
+                    UserProvider.token = response.token;
+                    UserProvider.refresh_token = response.refresh_token;
+                }
+                resolve(response.token)
+            }).catch((error : CustomError) => {
+                reject(error);
+            })
+        }))
     }
 
 

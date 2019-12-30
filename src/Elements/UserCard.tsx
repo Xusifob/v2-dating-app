@@ -60,6 +60,7 @@ class UserCard extends Component
 
     public state  : any = {profile : {},runBot : false};
 
+    protected _ismounted : boolean = false;
 
     protected onAction : any;
 
@@ -70,6 +71,7 @@ class UserCard extends Component
         this.state  = {
             // @ts-ignore
             profile : this.props.profile,
+            runBot : false,
         };
 
         // @ts-ignore
@@ -78,11 +80,33 @@ class UserCard extends Component
         // @ts-ignore
         this.onAction = this.props.onAction;
 
+        if(this._ismounted) {
+            this.doActions(props);
+        }
+
+    }
+
+    public componentDidMount(): void {
+
+        this._ismounted = true;
+
+        this.doActions(this.props);
+
+    }
+
+    public componentWillUnmount(): void {
+        this._ismounted = false;
     }
 
 
     public componentWillReceiveProps(props)
     {
+        this.doActions(props);
+    }
+
+
+
+    public doActions = (props) => {
 
         // @ts-ignore
         const {hideActions} = this.props;

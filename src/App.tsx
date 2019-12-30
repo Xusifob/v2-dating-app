@@ -96,7 +96,7 @@ class App extends Component
                                     <MyProfile {...{configuratorService : this.configuratorService,userProvider : this.userProvider}} />
                                 </Route>
                                 <Route path="/dashboard" >
-                                    <DashBoard {...{profileService : this.profileService}} />
+                                    <DashBoard {...{userProvider : this.userProvider,profileService : this.profileService}} />
                                 </Route>
                                 <Route path="/messages" >
                                     <DiscussionsView {...{profileService : this.profileService}} />
