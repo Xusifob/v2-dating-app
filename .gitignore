@@ -1,0 +1,4 @@
+build
+src/Resources/Configuration.tsx
+.idea
+node_modules
