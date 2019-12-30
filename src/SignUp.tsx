@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import {Trans} from "react-i18next";
 import UserProvider from "./Services/UserProvider";
 import {Redirect} from 'react-router';
+import ToastService from "./Services/ToastService";
 
 
 const useStyles = (theme : any) => ({
@@ -58,6 +59,8 @@ class SignUp extends Component
     public handleChange = (evt : any) => {
 
         this.setState({ [evt.target.name]: evt.target.value });
+        this.setState({alert : { type : null, 'message' : ''}})
+
 
     }
 
@@ -72,6 +75,9 @@ class SignUp extends Component
             }).then(() => {
                 this.setState({ redirect: true })
             })
+        }).catch((response : any) => {
+
+            this.setState({alert : { type : 'error', 'message' : response.error}})
         })
 
     }
@@ -90,6 +96,7 @@ class SignUp extends Component
 
         return (
             <div className={classes.paper}>
+                <ToastService key={Math.random()} {...{alert : this.state.alert}} />
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
                 </Avatar>
