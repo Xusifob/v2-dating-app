@@ -64,6 +64,15 @@ const useStyles = (theme : Theme) => ({
         width: '30%',
         marginRight : '70%',
         display: 'flex',
+    },
+    tinder : {
+        backgroundColor: 'rgba(254, 90, 98, 0.25);'
+    },
+    bumble : {
+        backgroundColor: 'rgba(254, 197, 40, 0.25);'
+    },
+    badoo : {
+        backgroundColor: 'rgba(120, 59, 248, 0.25);'
     }
 });
 
@@ -97,23 +106,48 @@ class DiscussionsView extends Component
 
         this.loadDiscussions();
 
+        setInterval(() => {
+            this.loadDiscussions();
+
+            if(this.state.currentDiscussion && this.state.currentDiscussion.app) {
+                this.loadMessages(this.state.currentDiscussion);
+            }
+
+        },30000)
+
     }
 
+
+    /**
+     *
+     */
     public loadDiscussions() {
         //@ts-ignore
         this.discussionService.fetchAll().then((discussions : Discussion[]) => {
 
             this.setState({discussions: discussions});
+            this.setState({alert : { type : null, 'message' : ''}})
 
+        }).catch((error : CustomError) =>  {
+            this.setState({alert : {type : 'error', message : error.error}})
         })
     }
 
+    /**
+     *
+     * @param discussion
+     */
     public loadMessages(discussion : Discussion) {
         //@ts-ignore
         this.discussionService.fetchMessages(discussion).then((messages : Message[]) => {
 
             this.setState({messages: messages});
+            this.setState({alert : { type : null, 'message' : ''}})
 
+        }).catch((error : CustomError) =>  {
+            if(error.status != 404) {
+                this.setState({alert: {type: 'error', message: error.error}})
+            }
         })
     }
 
@@ -124,19 +158,19 @@ class DiscussionsView extends Component
     public selectDiscussion(discussion : Discussion)
     {
         this.setState({currentDiscussion : discussion});
+        this.setState({alert : { type : null, 'message' : ''}})
         this.loadMessages(discussion);
     }
 
 
     public onChange = (evt : any) => {
         this.setState({ [evt.target.name]: evt.target.value });
+        this.setState({alert : { type : null, 'message' : ''}})
 
     }
 
     public send = (event : any) => {
         event.preventDefault();
-
-
 
         let message = new Message({
             content : this.state.currentMessage,
@@ -151,7 +185,7 @@ class DiscussionsView extends Component
 
             this.setState({currentMessage : ''});
 
-            this.setState({messages : messages})
+            this.setState({messages : messages});
 
             this.setState({alert : {type : 'success', message : 'Message envoyé'}})
         }).catch((error : CustomError) => {
@@ -199,6 +233,7 @@ class DiscussionsView extends Component
                                 return (
                                     <div  key={discussion.appId} >
                                         <ListItem
+                                            className={classes[discussion.app]}
                                             button
                                             onClick={() => {this.selectDiscussion(discussion)}}
                                             alignItems="flex-start">

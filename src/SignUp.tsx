@@ -60,8 +60,6 @@ class SignUp extends Component
 
         this.setState({ [evt.target.name]: evt.target.value });
         this.setState({alert : { type : null, 'message' : ''}})
-
-
     }
 
     public signUp = (event : any) => {

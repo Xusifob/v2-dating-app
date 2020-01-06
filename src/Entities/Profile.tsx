@@ -21,14 +21,9 @@ export default class Profile extends Entity
     // @ts-ignore
     public distance : string|null;
 
-    // @ts-ignore
-    public jobTitle : string|null;
-
-    // @ts-ignore
-    public school : string|null;
-
     public attributes : any;
 
+    public profile_fields : any[];
 
     constructor(props) {
         super(props);

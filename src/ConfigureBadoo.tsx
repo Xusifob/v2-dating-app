@@ -50,13 +50,13 @@ const useStyles = (theme : any) => ({
 });
 
 
-class ConfigureBumble extends Component
+class ConfigureBadoo extends Component
 {
 
-    public steps : string[] = ['Entrez votre téléphone', 'Entrez votre mot de passe'];
+    public steps : string[] = ['Connectez-vous à votre compte', 'Confirmer le SMS'];
 
 
-    public state : any = {activeStep : 0,phone : '',password : '',extension : '33',redirect : false};
+    public state : any = {activeStep : 0,session : '',mail : '',password : '',redirect : false};
 
     public configuratorService: ConfiguratorService;
 
@@ -68,8 +68,6 @@ class ConfigureBumble extends Component
         this.configuratorService = props.configuratorService;
         this.userProvider = props.userProvider;
 
-        this.state.phone = this.userProvider.user.phone;
-
     }
 
 
@@ -79,36 +77,13 @@ class ConfigureBumble extends Component
     };
 
 
-    public handleChange = ({ target: { value } }) => {
-        value = value
-            // Remove all non-digits, turn initial 33 into nothing
-            .replace(/^33/, '')
-            .replace(/^0/, '')
-            // Stick to first 10, ignore later digits
-            .slice(0, 17)
-        // Add a space after any 2-digit group followed by more digits
-        //  .replace(/(\d{2})(?=\d)/g, '$1 ');
+    // Arrow fx for binding
+    public handleChange = (evt : any) => {
 
-        this.setState({ phone :  value })
-    }
-
-    public handleExtChange = ({ target: { value } }) => {
-        value = value
-            // Remove all non-digits, turn initial 33 into nothing
-            .replace(/^\+/, '')
-            .replace(/^0/, '')
-            // Stick to first 10, ignore later digits
-            .slice(0, 3)
-        // Add a space after any 2-digit group followed by more digits
-        //  .replace(/(\d{2})(?=\d)/g, '$1 ');
-
-        this.setState({ phone :  value })
-    }
+        this.setState({ [evt.target.name]: evt.target.value });
+        this.setState({alert : { type : null, 'message' : ''}})
 
 
-
-    public handlePasswordChange = ({target : {value}}) => {
-        this.setState({password : value})
     }
 
 
@@ -117,10 +92,10 @@ class ConfigureBumble extends Component
 
         event.preventDefault();
 
-        this.configuratorService.login('bumble',{
-            phone : this.state.phone,
-            prefix : this.state.extension
+        this.configuratorService.login('badoo',{
+            session : this.state.session
         }).then((response) => {
+            this.setState({redirect : true});
             this.setActiveStep(1);
         }).catch((response : CustomError) => {
             this.setState({alert : { type : 'error', 'message' : response.error}});
@@ -138,8 +113,7 @@ class ConfigureBumble extends Component
         event.preventDefault();
 
         this.configuratorService.validateLogin('bumble',{
-            phone : this.state.extension + this.state.phone,
-            password : this.state.password,
+            password : this.state.session,
         }).then((response) => {
             this.userProvider.user = response;
             this.setState({redirect : true});
@@ -182,45 +156,25 @@ class ConfigureBumble extends Component
                     {activeStep == 0 ?
                         <div>
                             <Typography component="h1" variant="h5">
-                                <Trans>Se connecter avec Bumble</Trans>
+                                <Trans>Se connecter avec Badoo</Trans>
                             </Typography>
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={1}>
-                                    <Grid item xs={4}>
                                         <TextField
                                             variant="outlined"
                                             margin="normal"
                                             required
                                             fullWidth
-                                            id="extension"
-                                            value={this.state.extension}
-                                            label="Extension"
-                                            onChange={this.handleExtChange}
-                                            name="extension"
-                                            type="text"
-                                            placeholder="+33"
-                                            autoComplete="extension"
-                                            autoFocus
-
-                                        />
-                                    </Grid>
-                                    <Grid item xs={8} >
-                                        <TextField
-                                            variant="outlined"
-                                            margin="normal"
-                                            required
-                                            fullWidth
-                                            id="phone"
-                                            value={this.state.phone}
-                                            label="Phone Number"
+                                            id="mail"
+                                            value={this.state.session}
+                                            label="Cookie de session Badoo (s1)"
                                             onChange={this.handleChange}
-                                            name="phone"
-                                            type="tel"
-                                            placeholder="06 55 59 55 95"
-                                            autoComplete="tel"
+                                            name="session"
+                                            type="session"
+                                            placeholder="s1:XXXX"
+                                            autoComplete="session"
                                             autoFocus
                                         />
-                                    </Grid>
                                 </Grid>
                                 <Button
                                     type="submit"
@@ -234,47 +188,54 @@ class ConfigureBumble extends Component
                                 </Button>
                             </form>
                         </div> :
-
                         <div>
                             <Typography component="h1" variant="h5">
-                                <Trans>Entrez votre mot de passe</Trans>
+                                <Trans>Se connecter avec Badoo</Trans>
                             </Typography>
-                            <form className={classes.form}>
-                                <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    id="phone"
-                                    value={this.state.password}
-                                    label="Votre Mot de passe"
-                                    onChange={this.handlePasswordChange}
-                                    name="password"
-                                    type="password"
-                                    autoComplete="text"
-                                    autoFocus
-                                />
-
+                            <form className={classes.form} noValidate>
+                                <Grid container spacing={1}>
+                                    <TextField
+                                        variant="outlined"
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        id="mail"
+                                        value={this.state.mail}
+                                        label="Adresse e-mail"
+                                        onChange={this.handleChange}
+                                        name="email"
+                                        type="email"
+                                        placeholder="adresse@email.com"
+                                        autoComplete="email"
+                                        autoFocus
+                                    />
+                                    <TextField
+                                        variant="outlined"
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        id="phone"
+                                        value={this.state.password}
+                                        label="Votre Mot de passe"
+                                        onChange={this.handleChange}
+                                        name="password"
+                                        type="password"
+                                        autoComplete="text"
+                                        autoFocus
+                                    />
+                                </Grid>
                                 <Button
                                     type="submit"
                                     fullWidth
                                     variant="contained"
                                     color="primary"
                                     className={classes.submit}
-                                    onClick={this.validateLogin}
+                                    onClick={this.login}
                                 >
-                                    <Trans>Valider</Trans>
+                                    Configure
                                 </Button>
-                                <Grid container>
-                                    <Grid item xs>
-                                        <Link onClick={() => this.setActiveStep(0)} variant="body2">
-                                            <Trans>Retour à l'étape précédente</Trans>
-                                        </Link>
-                                    </Grid>
-                                </Grid>
                             </form>
                         </div>
-
                     }
                 </Container>
             </div>
@@ -283,4 +244,4 @@ class ConfigureBumble extends Component
 }
 
 // @ts-ignore
-export default withStyles(useStyles)(ConfigureBumble)
+export default withStyles(useStyles)(ConfigureBadoo)

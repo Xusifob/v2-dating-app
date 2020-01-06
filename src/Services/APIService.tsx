@@ -45,6 +45,7 @@ class APIService {
                 .then(response => {
                     if (!response.ok) {
                         response.json().then((d) => {
+                            console.log(d);
                             reject(new CustomError(d));
                         })
                     } else {

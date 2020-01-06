@@ -19,6 +19,7 @@ import ConfiguratorService from "./Services/ConfiguratorService";
 import MyProfile from "./MyProfile";
 import ConfigureBumble from "./ConfigureBumble";
 import DiscussionsView from "./DiscussionsView";
+import ConfigureBadoo from "./ConfigureBadoo";
 
 
 const useStyles = (theme : any) => ({
@@ -91,6 +92,9 @@ class App extends Component
                                 </Route>
                                 <Route path="/configure/bumble" >
                                     <ConfigureBumble {...{configuratorService : this.configuratorService,userProvider : this.userProvider}} />
+                                </Route>
+                                <Route path="/configure/badoo" >
+                                    <ConfigureBadoo {...{configuratorService : this.configuratorService,userProvider : this.userProvider}} />
                                 </Route>
                                 <Route path="/my-profile" >
                                     <MyProfile {...{configuratorService : this.configuratorService,userProvider : this.userProvider}} />

@@ -29,7 +29,7 @@ const useStyles = (theme : any) => ({
         width: '100%',
     },
     imgContainer : {
-        height: 310,
+        height: 370,
         overflow: 'hidden',
     },
     subtitle: {
@@ -47,6 +47,10 @@ const useStyles = (theme : any) => ({
     bumble : {
         maxWidth: 480,
         backgroundColor: 'rgba(254, 197, 40, 0.25);'
+    },
+    badoo : {
+        maxWidth: 480,
+        backgroundColor: 'rgba(120, 59, 248, 0.25);'
     }
 });
 
@@ -367,7 +371,7 @@ class UserCard extends Component
                         <img src="" alt="" className={classes.icon} />
                     </Typography>
                     <Typography className={classes.subtitle} color="textSecondary" gutterBottom>
-                        <strong>{profile.distance}</strong> , {profile.jobTitle}
+                        <strong>{profile.distance}</strong>,
                     </Typography>
                     <Typography variant="body2" color="textSecondary" component="p" dangerouslySetInnerHTML={{__html: profile.bio}} >
                     </Typography>
