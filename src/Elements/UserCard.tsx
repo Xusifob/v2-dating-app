@@ -165,7 +165,6 @@ class UserCard extends Component
      */
     public runBot = (user : User) => {
 
-        console.log('run');
 
         let to_dislike = false;
 

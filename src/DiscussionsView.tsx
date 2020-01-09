@@ -9,7 +9,7 @@ import ProfileService from "./Services/ProfileService";
 import {
     Card,
     Divider,
-    Hidden,
+    Hidden, IconButton,
     List,
     ListItem,
     ListItemAvatar,
@@ -29,6 +29,8 @@ import UserCard from "./Elements/UserCard";
 import TextField from "@material-ui/core/TextField";
 import UserProvider from "./Services/UserProvider";
 import Profile from "./Entities/Profile";
+import Picker from 'emoji-picker-react';
+import { animateScroll } from "react-scroll";
 
 
 const useStyles = (theme : Theme) => ({
@@ -40,8 +42,8 @@ const useStyles = (theme : Theme) => ({
     messagesContainer : {
         height: '80vh',
         overflow: 'auto',
-        paddingTop : theme.spacing(10),
-        marginTop: '-' + theme.spacing(10) + 'px',
+        paddingTop : theme.spacing(10) + 'px !important',
+        marginTop: '-' + theme.spacing(10) + 'px !important',
         width: '100%'
     },
     textAreaContainer : {
@@ -51,9 +53,10 @@ const useStyles = (theme : Theme) => ({
     },
     messages : {
         height: '100vh',
-        paddingTop : theme.spacing(10),
+        paddingTop : theme.spacing(10) + 'px !important',
+        marginTop: '-' + theme.spacing(10) + 'px !important',
         overflow: 'auto',
-   //     marginTop: '-' + theme.spacing(10) + 'px',
+        //     marginTop: '-' + theme.spacing(10) + 'px',
     },
     form: {
         width: '100%', // Fix IE 11 issue.
@@ -73,6 +76,14 @@ const useStyles = (theme : Theme) => ({
     },
     badoo : {
         backgroundColor: 'rgba(120, 59, 248, 0.25);'
+    },
+    relative : {
+        position: 'relative',
+    },
+    emojiPicker : {
+        position: 'absolute',
+        top : '-315px',
+        right: 0,
     }
 });
 
@@ -88,6 +99,7 @@ class DiscussionsView extends Component
         currentDiscussion : {},
         messages : [],
         currentMessage : '',
+        isEmojiPickerVisible : false,
     };
 
     protected profileService : ProfileService;
@@ -133,6 +145,13 @@ class DiscussionsView extends Component
         })
     }
 
+
+    public scrollToBottom() {
+        animateScroll.scrollToBottom({
+            containerId: "messages"
+        });
+    }
+
     /**
      *
      * @param discussion
@@ -143,10 +162,17 @@ class DiscussionsView extends Component
 
             this.setState({messages: messages});
             this.setState({alert : { type : null, 'message' : ''}})
+            this.scrollToBottom();
 
         }).catch((error : CustomError) =>  {
-            if(error.status != 404) {
+
+            if(error.status != 404 && error.status) {
                 this.setState({alert: {type: 'error', message: error.error}})
+            } else {
+
+
+                this.setState({messages: []});
+                this.setState({alert : { type : null, 'message' : ''}})
             }
         })
     }
@@ -162,6 +188,17 @@ class DiscussionsView extends Component
         this.loadMessages(discussion);
     }
 
+    public toggleEmoji = () => {
+        let { isEmojiPickerVisible } = this.state;
+
+        isEmojiPickerVisible = !isEmojiPickerVisible;
+
+        this.setState({isEmojiPickerVisible : isEmojiPickerVisible})
+
+
+    }
+
+
 
     public onChange = (evt : any) => {
         this.setState({ [evt.target.name]: evt.target.value });
@@ -175,6 +212,8 @@ class DiscussionsView extends Component
         let message = new Message({
             content : this.state.currentMessage,
         });
+
+        this.setState({isEmojiPickerVisible : false})
 
         const { currentDiscussion } = this.state;
 
@@ -196,11 +235,22 @@ class DiscussionsView extends Component
 
     }
 
+    public onEmojiClick =  (event,emojiObject) => {
+
+        let { currentMessage } = this.state;
+
+        currentMessage += emojiObject.emoji;
+
+        this.setState({currentMessage : currentMessage});
+
+    }
 
     public render() {
 
 
         const { redirect } = this.state;
+
+        const { isEmojiPickerVisible } = this.state;
 
         const { discussions } = this.state;
 
@@ -244,7 +294,7 @@ class DiscussionsView extends Component
                                                 primary={discussion.profile.fullName}
                                                 secondary={
                                                     <React.Fragment>
-                                                        {discussion.messages[0].content}
+                                                        {discussion.messages[0] ? discussion.messages[0].content : ''}
                                                     </React.Fragment>
                                                 }
                                             />
@@ -259,7 +309,7 @@ class DiscussionsView extends Component
                         <Grid container item sm={6} md={4} lg={6} xs={12} spacing={2}
                               className={classes.messages}
                         >
-                            <div className={classes.messagesContainer} >
+                            <div className={classes.messagesContainer} id="messages" >
                                 {messages.map((message: Message) => {
 
                                     let profile;
@@ -295,27 +345,41 @@ class DiscussionsView extends Component
                                 }
                             </div>
                             <div className={classes.textAreaContainer}>
-                                <TextField
-                                    id="currentMessage"
-                                    label="Votre message"
-                                    multiline
-                                    rows={2}
-                                    className={classes.form}
-                                    name="currentMessage"
-                                    value={this.state.currentMessage}
-                                    onChange={this.onChange}
-                                    variant="outlined"
-                                />
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.submit}
-                                    onClick={this.send}
-                                >
-                                    <Trans>Envoyer</Trans>
-                                </Button>
+                                <Grid container spacing={0} >
+                                    <Grid item sm={11}>
+                                        <TextField
+                                            id="currentMessage"
+                                            label="Votre message"
+                                            multiline
+                                            rows={2}
+                                            className={classes.form}
+                                            name="currentMessage"
+                                            value={this.state.currentMessage}
+                                            onChange={this.onChange}
+                                            variant="outlined"
+                                        />
+                                    </Grid>
+                                    <Grid item md={1} className={classes.relative}>
+                                        <IconButton onClick={this.toggleEmoji} >
+                                            😊
+                                        </IconButton>
+                                        {isEmojiPickerVisible ? (
+                                            <div className={classes.emojiPicker}>
+                                                <Picker onEmojiClick={this.onEmojiClick}/>
+                                            </div>
+                                        ) : ''}
+                                    </Grid>
+                                    <Button
+                                        type="submit"
+                                        fullWidth
+                                        variant="contained"
+                                        color="primary"
+                                        className={classes.submit}
+                                        onClick={this.send}
+                                    >
+                                        <Trans>Envoyer</Trans>
+                                    </Button>
+                                </Grid>
                             </div>
                         </Grid>) : ''}
                     {currentDiscussion.profile ? (<Hidden only={['sm', 'xs']}>
@@ -324,7 +388,6 @@ class DiscussionsView extends Component
                         </Grid>
                     </Hidden>) : ''}
                 </Grid>
-
             </div>
         );
     }

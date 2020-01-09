@@ -115,9 +115,6 @@ class App extends Component
                             </Switch>
                         </div>
                     </Router>
-                    <Box mt={8}>
-                        <Copyright/>
-                    </Box>
                 </div>
             )
         } else {

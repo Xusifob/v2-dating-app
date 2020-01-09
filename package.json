@@ -16,6 +16,7 @@
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
     "clsx": "latest",
+    "emoji-picker-react": "^3.1.0",
     "google-maps-react": "^2.0.2",
     "i18next": "^19.0.2",
     "react": "latest",
@@ -26,6 +27,7 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-scripts": "latest",
+    "react-scroll": "^1.7.15",
     "react-swipeable-views": "^0.13.3",
     "typescript": "^3.7.4"
   },

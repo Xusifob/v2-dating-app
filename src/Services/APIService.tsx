@@ -1,6 +1,7 @@
 import Configuration from '../Resources/Configuration';
 import UserProvider from "./UserProvider";
 import CustomError from "../Entities/CustomError";
+import {Simulate} from "react-dom/test-utils";
 
 
 class APIService {
@@ -45,7 +46,6 @@ class APIService {
                 .then(response => {
                     if (!response.ok) {
                         response.json().then((d) => {
-                            console.log(d);
                             reject(new CustomError(d));
                         })
                     } else {
@@ -79,8 +79,11 @@ class APIService {
                 }
                 return response.json();
             })
-            .catch(error => {
-                this.handleError(error);
+            .catch(response => {
+                if(!response.message) {
+                    throw new Error(response);
+                }
+                this.handleError(response);
             });
     }
 
