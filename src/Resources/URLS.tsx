@@ -6,7 +6,13 @@ export default class URLS
 
    static USER_UPDATE : string = 'users';
 
+   static GET_LOCATION : string = '{app}/location';
+
+   static UPDATE_LOCATION : string = '{app}/location';
+
    static GET_MATCHES : string = '{app}/matches';
+
+   static GET_PENDING : string = '{app}/matches/pending';
 
    static GET_MESSAGES : string = '{app}/messages';
 

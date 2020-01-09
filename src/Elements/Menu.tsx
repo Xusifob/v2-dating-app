@@ -20,6 +20,7 @@ import {Redirect} from 'react-router';
 import PersonIcon from '@material-ui/icons/Person';
 import clsx from "clsx";
 import MenuIcon from '@material-ui/icons/Menu';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChatIcon from '@material-ui/icons/Chat';
 
@@ -178,6 +179,14 @@ class Menu extends Component
                             </ListItemIcon>
                             <ListItemText>
                                 <Trans>Tableau de Bord</Trans>
+                            </ListItemText>
+                        </ListItem>
+                        <ListItem component="a" href="/matches/pending">
+                            <ListItemIcon>
+                                <FavoriteIcon/>
+                            </ListItemIcon>
+                            <ListItemText>
+                                <Trans>Matchs en attente</Trans>
                             </ListItemText>
                         </ListItem>
                         <ListItem component="a" href="/messages">

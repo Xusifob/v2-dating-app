@@ -133,6 +133,55 @@ export default class UserProvider extends APIService
     }
 
 
+    /**
+     *
+     * @param app
+     */
+    public getCurrentLocation(app : string = 'all') : any
+    {
+        return  new Promise((resolve : any, reject : any) => {
+
+            let url = URLS.GET_LOCATION;
+
+            url = url.replace('{app}',app);
+
+            this.getAll(url).then((response : any) => {
+
+                resolve(response);
+
+            }).catch((error : any) => {
+                reject(error);
+            })
+
+        });
+
+    }
+
+  /**
+     *
+     * @param app
+     * @param location
+     */
+    public updateLocation(location : any,app : string = 'all') : any
+    {
+        return  new Promise((resolve : any, reject : any) => {
+
+            let url = URLS.UPDATE_LOCATION;
+
+            url = url.replace('{app}',app);
+
+            this.post(url,location).then((response : any) => {
+
+                resolve(response);
+
+            }).catch((error : any) => {
+                reject(error);
+            })
+
+        });
+
+    }
+
 
     public reset() : void
     {

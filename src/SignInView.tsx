@@ -34,7 +34,7 @@ const useStyles = (theme : any) => ({
 });
 
 
-class SignIn extends Component
+class SignInView extends Component
 {
 
 
@@ -164,5 +164,5 @@ class SignIn extends Component
 }
 
 // @ts-ignore
-export default withTranslation()(withStyles(useStyles)(SignIn))
+export default withTranslation()(withStyles(useStyles)(SignInView))
 

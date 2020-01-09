@@ -38,6 +38,34 @@ export default class ProfileService extends APIService
         return promise;
     }
 
+    /**
+     *
+     * @param app
+     */
+    public fetchPending(app : string = 'all')
+    {
+
+        let promise = new Promise((resolve : any, reject : any) => {
+
+            let url = URLS.GET_PENDING;
+
+            url = url.replace('{app}',app);
+
+            this.getAll(url).then((response : any) => {
+
+                let profiles = this.parseProfiles(response);
+
+                resolve(profiles);
+
+            }).catch((error : any) => {
+                reject(error);
+            })
+        });
+
+
+        return promise;
+    }
+
 
     /**
      *

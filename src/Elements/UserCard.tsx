@@ -41,16 +41,22 @@ const useStyles = (theme : any) => ({
         width: 'auto',
     },
     tinder : {
-        maxWidth: 480,
         backgroundColor: 'rgba(254, 90, 98, 0.25);'
     },
     bumble : {
-        maxWidth: 480,
         backgroundColor: 'rgba(254, 197, 40, 0.25);'
     },
     badoo : {
-        maxWidth: 480,
         backgroundColor: 'rgba(120, 59, 248, 0.25);'
+    },
+    dislike : {
+        backgroundColor: 'rgba(255, 40, 40, 0.70);'
+    },
+    like : {
+        backgroundColor: '#4caf50'
+    },
+    card : {
+        maxWidth: 480,
     }
 });
 
@@ -76,6 +82,7 @@ class UserCard extends Component
             // @ts-ignore
             profile : this.props.profile,
             runBot : false,
+            action: null,
         };
 
         // @ts-ignore
@@ -117,6 +124,9 @@ class UserCard extends Component
 
         // Disable bot actions only if the actions are hidden
         if(!hideActions) {
+
+            // Put a random timeout to avoid tinder errors
+            //    setTimeout(() => {
             let user = UserProvider.getUser();
 
             let runBot = props.runBot || user.settings.startBotAuto;
@@ -130,12 +140,10 @@ class UserCard extends Component
             }
 
             if(props.like !== this.state.like) {
-
                 this.setState({like: props.like});
                 if(props.like) {
                     this.like();
                 }
-
             }
 
             if(props.disLike !== this.state.disLike) {
@@ -143,8 +151,8 @@ class UserCard extends Component
                 if(props.disLike) {
                     this.disLike();
                 }
-
             }
+            //     },Math.random()*2000)
         }
     }
 
@@ -156,6 +164,8 @@ class UserCard extends Component
      * @param user
      */
     public runBot = (user : User) => {
+
+        console.log('run');
 
         let to_dislike = false;
 
@@ -221,9 +231,12 @@ class UserCard extends Component
         // @ts-ignore
         const {profile} = this.state;
 
+        this.setState({action: 'like'});
+
         this.profileService.like(profile).then(() => {
             this.onAction('like',profile);
         }).catch((error : CustomError) => {
+            this.setState({action: null});
             this.onAction('error',error);
         })
     }
@@ -240,9 +253,12 @@ class UserCard extends Component
         // @ts-ignore
         const {profile} = this.state;
 
+        this.setState({action: 'superlike'});
+
         this.profileService.superLike(profile).then(() => {
             this.onAction('superLike',profile);
         }).catch((error : CustomError) => {
+            this.setState({action: null});
             this.onAction('error',error);
         })
 
@@ -309,9 +325,12 @@ class UserCard extends Component
         // @ts-ignore
         const {profile} = this.state;
 
+        this.setState({action: 'dislike'});
+
         this.profileService.disLike(profile).then(() => {
             this.onAction('dislike',profile);
         }).catch((error : CustomError) => {
+            this.setState({action: null});
             this.onAction('error',error);
         })
     }
@@ -356,50 +375,55 @@ class UserCard extends Component
         // @ts-ignore
         const {profile} = this.state;
 
+        const {action} = this.state;
+
 
         return (
-            <Card className={classes[profile.app]}>
-                <div>
-                    <KBSwipeableViews
-                        enableMouseEvents
-                        slideRenderer={this.renderImage}
-                    />
-                </div>
-                <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                        { profile.fullName }, {profile.age}
-                        <img src="" alt="" className={classes.icon} />
-                    </Typography>
-                    <Typography className={classes.subtitle} color="textSecondary" gutterBottom>
-                        <strong>{profile.distance}</strong>,
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p" dangerouslySetInnerHTML={{__html: profile.bio}} >
-                    </Typography>
-                </CardContent>
-                {hideActions ? '' : (
-                    <CardActions disableSpacing>
-                        <IconButton aria-label="like" title="like" onClick={this.like}>
-                            <FavoriteIcon />
-                        </IconButton>
-                        <IconButton aria-label="super Like" title="superLike" onClick={this.superLike} >
-                            <GradeIcon />
-                        </IconButton>
-                        <IconButton aria-label="pass" title="pass" onClick={this.disLike}>
-                            <CloseIcon />
-                        </IconButton>
-                        {
-                            profile.isFavorite ?
-                                < IconButton aria-label="Favorite" title="Favorite" onClick={this.removeFavorite} >
-                                    <PersonAddDisabled />
-                                </IconButton>
-                                :
-                                <IconButton aria-label="Favorite" title="Favorite" onClick={this.favorite}>
-                                    <PersonAdd/>
-                                </IconButton>
+            (
+                <Card className={classes.card + ' ' + classes[profile.app] + ' ' + classes[action]}>
+                    <div>
+                        <KBSwipeableViews
+                            enableMouseEvents
+                            slideRenderer={this.renderImage}
+                        />
+                    </div>
+                    <CardContent>
+                        <Typography gutterBottom variant="h5" component="h2">
+                            {profile.fullName ? ( profile.fullName  + ' , ' +  profile.age) : (profile.appId) }
+                        </Typography>
+                        {profile.distance ? (
+                            <Typography className={classes.subtitle} color="textSecondary" gutterBottom>
+                                <strong>{profile.distance}</strong>,
+                            </Typography>) : '' }
+                        {profile.bio ? (
+                            <Typography variant="body2" color="textSecondary" component="p" dangerouslySetInnerHTML={{__html: profile.bio}} >
+                            </Typography>) : ''
                         }
-                    </CardActions>
-                )}
-            </Card>
+                    </CardContent>
+                    {hideActions ? '' : (
+                        <CardActions disableSpacing>
+                            <IconButton aria-label="like" title="like" onClick={this.like}>
+                                <FavoriteIcon />
+                            </IconButton>
+                            <IconButton aria-label="super Like" title="superLike" onClick={this.superLike} >
+                                <GradeIcon />
+                            </IconButton>
+                            <IconButton aria-label="pass" title="pass" onClick={this.disLike}>
+                                <CloseIcon />
+                            </IconButton>
+                            {
+                                profile.isFavorite ?
+                                    < IconButton aria-label="Favorite" title="Favorite" onClick={this.removeFavorite} >
+                                        <PersonAddDisabled />
+                                    </IconButton>
+                                    :
+                                    <IconButton aria-label="Favorite" title="Favorite" onClick={this.favorite}>
+                                        <PersonAdd/>
+                                    </IconButton>
+                            }
+                        </CardActions>
+                    )}
+                </Card>)
         );
     }
 }

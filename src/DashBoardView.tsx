@@ -54,7 +54,7 @@ const WarningButton = withStyles((theme: Theme) => ({
 
 
 
-class DashBoard extends Component
+class DashBoardView extends Component
 {
 
     public state : any = {
@@ -64,7 +64,8 @@ class DashBoard extends Component
         app : 'all',
         runBot : false,
         passAll : false,
-        likeAll : false
+        likeAll : false,
+        isLoading : false,
     };
 
     protected profileService : ProfileService;
@@ -101,16 +102,21 @@ class DashBoard extends Component
      */
     public loadProfiles = () =>
     {
+
+        let {isLoading} = this.state;
+
+        if(isLoading) {
+            return;
+        }
+        this.setState({isLoading: true});
+
         //@ts-ignore
         this.profileService.fetchAll(this.state.app).then((profiles : Profile[]) => {
 
             this.setState({profiles: profiles});
+            this.setState({isLoading: false});
 
         }).catch((response : CustomError) => {
-            if(response.status == 404) {
-                this.setState({profiles : [new Profile({})]});
-                this.setState({alert : { type : 'error', 'message' : response.error}});
-            }
             if(response.status == 401) {
                 // Reload profiles, the token is probably refreshed with load
                 if(response.error == 'Expired JWT Token') {
@@ -124,6 +130,10 @@ class DashBoard extends Component
             if(response.status == 406) {
                 this.setState({redirect: true})
             }
+
+            this.setState({profiles : [new Profile({})]});
+            this.setState({alert : { type : 'error', 'message' : response.error}});
+
         });
     }
 
@@ -283,4 +293,4 @@ class DashBoard extends Component
 
 
 // @ts-ignore
-export default withStyles(useStyles)(DashBoard)
+export default withStyles(useStyles)(DashBoardView)

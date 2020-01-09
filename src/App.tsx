@@ -1,7 +1,7 @@
 import React, {Component} from "react";
-import SignIn from "./SignIn";
+import SignInView from "./SignInView";
 import SignUp from "./SignUp";
-import DashBoard from "./DashBoard";
+import DashBoardView from "./DashBoardView";
 
 // @ts-ignore
 import { BrowserRouter as Router,Redirect, Route, Link,Switch} from "react-router-dom";
@@ -16,10 +16,11 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Box from "@material-ui/core/Box";
 import {Copyright} from "./Elements/Copyright";
 import ConfiguratorService from "./Services/ConfiguratorService";
-import MyProfile from "./MyProfile";
+import MyProfileView from "./MyProfileView";
 import ConfigureBumble from "./ConfigureBumble";
 import DiscussionsView from "./DiscussionsView";
 import ConfigureBadoo from "./ConfigureBadoo";
+import PendingMatchesView from "./PendingMatchesView";
 
 
 const useStyles = (theme : any) => ({
@@ -97,10 +98,13 @@ class App extends Component
                                     <ConfigureBadoo {...{configuratorService : this.configuratorService,userProvider : this.userProvider}} />
                                 </Route>
                                 <Route path="/my-profile" >
-                                    <MyProfile {...{configuratorService : this.configuratorService,userProvider : this.userProvider}} />
+                                    <MyProfileView {...{configuratorService : this.configuratorService,userProvider : this.userProvider}} />
                                 </Route>
                                 <Route path="/dashboard" >
-                                    <DashBoard {...{userProvider : this.userProvider,profileService : this.profileService}} />
+                                    <DashBoardView {...{userProvider : this.userProvider,profileService : this.profileService}} />
+                                </Route>
+                                <Route path="/matches/pending" >
+                                    <PendingMatchesView {...{userProvider : this.userProvider,profileService : this.profileService}} />
                                 </Route>
                                 <Route path="/messages" >
                                     <DiscussionsView {...{profileService : this.profileService}} />
@@ -124,7 +128,7 @@ class App extends Component
                         <div className="main-route-place">
                             <Switch>
                                 <Route exact path="/">
-                                    <SignIn {...{userProvider : this.userProvider}} />
+                                    <SignInView {...{userProvider : this.userProvider}} />
                                 </Route>
                                 <Route path="/register" >
                                     <SignUp {...{userProvider : this.userProvider}} />

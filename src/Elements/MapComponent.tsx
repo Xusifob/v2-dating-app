@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Map, GoogleApiWrapper } from 'google-maps-react';
+import { Map, GoogleApiWrapper,Marker } from 'google-maps-react';
 import Configuration from "./../Resources/Configuration";
 import {Theme, withStyles} from "@material-ui/core/styles";
 
@@ -21,13 +21,8 @@ class MapComponent extends Component
 {
 
 
-    public state : any = {
-        user : { settings : {}
-        }};
-
     constructor(props) {
         super(props);
-
     }
 
 
@@ -40,17 +35,27 @@ class MapComponent extends Component
         // @ts-ignore
         const {google} = this.props;
 
+        // @ts-ignore
+        const {location} = this.props;
+
 
         return (
-            <div>
+            location.lat && location.lon ? (
+            <div style={{height: '350px',position: "relative"}} >
                 <Map
+                    style={{width: '100%', height: '300px', position: 'initial'}}
                     google={google}
-                    zoom={8}
+                    zoom={12}
                     classes={classes.map}
-                    initialCenter={{ lat: 47.444, lng: -122.176}}
-                />
-                <div className={classes.clearfix} />
-            </div>
+                    initialCenter={{ lat: location.lat, lng: location.lon}}
+                    center={{ lat: location.lat, lng: location.lon}}
+                >
+                    <Marker
+                        position={
+                            {lat: location.lat, lng: location.lon}
+                        } />
+                </Map>
+            </div>) : ''
         );
     }
 }

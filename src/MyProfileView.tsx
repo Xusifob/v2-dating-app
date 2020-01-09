@@ -13,6 +13,9 @@ import {Checkbox, FormControlLabel} from "@material-ui/core";
 import ToastService from "./Services/ToastService";
 import User from "./Entities/User";
 import MapComponent from "./Elements/MapComponent";
+import GooglePlacesAutocomplete, {geocodeByPlaceId} from 'react-google-places-autocomplete';
+import 'react-google-places-autocomplete/dist/assets/index.css';
+
 
 const useStyles = (theme : any) => ({
     root: {
@@ -45,13 +48,17 @@ const useStyles = (theme : any) => ({
 
 
 
-class MyProfile extends Component
+class MyProfileView extends Component
 {
 
 
     public state : any = {
-        user : { settings : {}
-        }};
+        user : { settings : {}},
+        location : {lat : '', lon : ''}
+    };
+
+
+    protected locationUpdated : boolean = false;
 
     public configuratorService: ConfiguratorService;
 
@@ -69,7 +76,10 @@ class MyProfile extends Component
             user.phone = '';
         }
 
-        this.state = {user : user};
+        this.state = {
+            user : user,
+            location : {}
+        };
 
         this.userProvider.loadCurrentUser().then((user : User) => {
 
@@ -78,6 +88,12 @@ class MyProfile extends Component
             }
 
             this.setState({user : user});
+
+        })
+
+        this.userProvider.getCurrentLocation().then((location) => {
+
+            this.setState({location : location});
 
         })
 
@@ -113,13 +129,39 @@ class MyProfile extends Component
     }
 
 
+    public loadLocationData = (selection) => {
+
+        geocodeByPlaceId(selection.place_id).then((place) => {
+            if(place[0]) {
+
+                this.locationUpdated = true;
+
+                this.setState({
+                    location: {
+                        'lat': place[0].geometry.location.lat(),
+                        'lon': place[0].geometry.location.lng(),
+                    }
+                })
+            }
+
+        });
+
+    }
+
+
     public submit = (evt : any) => {
         evt.preventDefault();
+
+        if(this.locationUpdated) {
+            this.userProvider.updateLocation(this.state.location).then(() => {
+
+            });
+
+        }
 
         this.userProvider.update(this.state.user).then(() => {
             this.setState({alert : {type : 'success', message : 'Votre profil a bien été mis à jour'}})
         }).catch((response) => {
-            console.log(response);
             this.setState({alert : {type : 'danger', message : 'Une erreur est survenue'}})
 
         })
@@ -130,6 +172,8 @@ class MyProfile extends Component
 
         // @ts-ignore
         const {classes} = this.props;
+
+        const {location} = this.state;
 
 
         return (
@@ -206,6 +250,34 @@ class MyProfile extends Component
                                     variant="outlined"
                                 />
 
+                                <Typography component="h2" variant="h5" className={classes.title} >
+                                    <Trans>Votre localisation</Trans>
+                                </Typography>
+
+                                <MapComponent {... {location : location}} />
+
+                                <div>
+                                    <GooglePlacesAutocomplete
+                                        onSelect={this.loadLocationData}
+                                        renderInput={(props) => (
+                                            <TextField
+                                                variant="outlined"
+                                                margin="normal"
+                                                required
+                                                fullWidth
+                                                id="location"
+                                                label="Votre localisation"
+                                                type="text"
+                                                placeholder="Votre localisation"
+                                                autoComplete="text"
+                                                autoFocus
+                                                {...props}
+                                            />
+                                        )}
+                                    />
+                                </div>
+
+
                                 <Button
                                     type="submit"
                                     fullWidth
@@ -226,4 +298,4 @@ class MyProfile extends Component
 }
 
 // @ts-ignore
-export default withStyles(useStyles)(MyProfile)
+export default withStyles(useStyles)(MyProfileView);
