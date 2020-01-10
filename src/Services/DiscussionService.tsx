@@ -45,7 +45,11 @@ export default class DiscussionService extends APIService
 
         return  new Promise((resolve : any, reject : any) => {
 
-            this.get(URLS.GET_MESSAGES,discussion.appId).then((response : any) => {
+            let url = URLS.GET_MESSAGES;
+
+            url = url.replace('{app}',discussion.app);
+
+            this.get(url,discussion.appId).then((response : any) => {
 
                 let messages = this.parseMessages(response);
 
