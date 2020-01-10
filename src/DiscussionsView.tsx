@@ -112,6 +112,8 @@ class DiscussionsView extends Component
 
     protected discussionService : DiscussionService;
 
+    protected input : any;
+
     /**
      *
      * @param props
@@ -164,6 +166,7 @@ class DiscussionsView extends Component
      */
     public loadMessages(discussion : Discussion) {
 
+
         //@ts-ignore
         this.discussionService.fetchMessages(discussion).then((messages : Message[]) => {
 
@@ -171,6 +174,8 @@ class DiscussionsView extends Component
             this.setState({alert : { type : null, 'message' : ''}})
             this.setState({isLoadingMessages: false});
             this.scrollToBottom();
+            this.focusInput();
+
 
         }).catch((error : CustomError) =>  {
 
@@ -178,7 +183,7 @@ class DiscussionsView extends Component
                 this.setState({alert: {type: 'error', message: error.error}})
             } else {
 
-
+                this.focusInput();
                 this.setState({messages: []});
                 this.setState({alert : { type : null, 'message' : ''}})
                 this.setState({isLoadingMessages: false});
@@ -197,9 +202,30 @@ class DiscussionsView extends Component
         this.setState({messages : []});
         this.setState({isLoadingMessages: true});
 
+        this.focusInput();
+
         this.loadMessages(discussion);
     }
 
+
+    public focusInput = () => {
+        setTimeout(() => {
+
+            if (this.input) {
+                this.input.focus()
+            }
+        }, 100);
+    }
+
+    /**
+     * On key press, if shift isn"t enabled send message
+     * @param event
+     */
+    public onKeyPress = (event) => {
+        if(event.key == 'Enter' && !event.shiftKey) {
+            this.send(event);
+        }
+    }
 
     /**
      *
@@ -276,6 +302,8 @@ class DiscussionsView extends Component
         const { isLoadingMessages } = this.state;
 
         const { currentDiscussion } = this.state;
+
+        this.focusInput();
 
         // @ts-ignore
         const { classes } = this.props;
@@ -376,6 +404,9 @@ class DiscussionsView extends Component
                                             value={this.state.currentMessage}
                                             onChange={this.onChange}
                                             variant="outlined"
+                                            onKeyPress={this.onKeyPress}
+                                            autoFocus
+                                            ref={inputRef => { this.input = inputRef }}
                                         />
                                     </Grid>
                                     <Grid item md={1} className={classes.relative}>
