@@ -7,7 +7,7 @@ import {Theme, withStyles} from '@material-ui/core/styles';
 import ProfileService from "./Services/ProfileService";
 
 import {
-    Card,
+    Card, CircularProgress,
     Divider,
     Hidden, IconButton,
     List,
@@ -31,6 +31,7 @@ import UserProvider from "./Services/UserProvider";
 import Profile from "./Entities/Profile";
 import Picker from 'emoji-picker-react';
 import { animateScroll } from "react-scroll";
+import Backdrop from "@material-ui/core/Backdrop";
 
 
 const useStyles = (theme : Theme) => ({
@@ -56,7 +57,13 @@ const useStyles = (theme : Theme) => ({
         paddingTop : theme.spacing(10) + 'px !important',
         marginTop: '-' + theme.spacing(10) + 'px !important',
         overflow: 'auto',
+        position: 'relative',
         //     marginTop: '-' + theme.spacing(10) + 'px',
+    },
+    progress : {
+        position  : 'absolute',
+        top: '50%',
+        left: '50%',
     },
     form: {
         width: '100%', // Fix IE 11 issue.
@@ -99,6 +106,7 @@ class DiscussionsView extends Component
         currentDiscussion : {},
         messages : [],
         currentMessage : '',
+        isLoadingMessages : false,
         isEmojiPickerVisible : false,
     };
 
@@ -157,11 +165,13 @@ class DiscussionsView extends Component
      * @param discussion
      */
     public loadMessages(discussion : Discussion) {
+
         //@ts-ignore
         this.discussionService.fetchMessages(discussion).then((messages : Message[]) => {
 
             this.setState({messages: messages});
             this.setState({alert : { type : null, 'message' : ''}})
+            this.setState({isLoadingMessages: false});
             this.scrollToBottom();
 
         }).catch((error : CustomError) =>  {
@@ -173,6 +183,7 @@ class DiscussionsView extends Component
 
                 this.setState({messages: []});
                 this.setState({alert : { type : null, 'message' : ''}})
+                this.setState({isLoadingMessages: false});
             }
         })
     }
@@ -184,17 +195,23 @@ class DiscussionsView extends Component
     public selectDiscussion(discussion : Discussion)
     {
         this.setState({currentDiscussion : discussion});
-        this.setState({alert : { type : null, 'message' : ''}})
+        this.setState({alert : { type : null, 'message' : ''}});
+        this.setState({messages : []});
+        this.setState({isLoadingMessages: true});
+
         this.loadMessages(discussion);
     }
 
+
+    /**
+     *
+     */
     public toggleEmoji = () => {
         let { isEmojiPickerVisible } = this.state;
 
         isEmojiPickerVisible = !isEmojiPickerVisible;
 
         this.setState({isEmojiPickerVisible : isEmojiPickerVisible})
-
 
     }
 
@@ -225,6 +242,7 @@ class DiscussionsView extends Component
             this.setState({currentMessage : ''});
 
             this.setState({messages : messages});
+            this.scrollToBottom();
 
             this.setState({alert : {type : 'success', message : 'Message envoyé'}})
         }).catch((error : CustomError) => {
@@ -242,6 +260,7 @@ class DiscussionsView extends Component
         currentMessage += emojiObject.emoji;
 
         this.setState({currentMessage : currentMessage});
+        this.setState({isEmojiPickerVisible : false})
 
     }
 
@@ -255,6 +274,8 @@ class DiscussionsView extends Component
         const { discussions } = this.state;
 
         const { messages } = this.state;
+
+        const { isLoadingMessages } = this.state;
 
         const { currentDiscussion } = this.state;
 
@@ -294,7 +315,7 @@ class DiscussionsView extends Component
                                                 primary={discussion.profile.fullName}
                                                 secondary={
                                                     <React.Fragment>
-                                                        {discussion.messages[0] ? discussion.messages[0].content : ''}
+                                                        {discussion.messages[0] ? discussion.messages[0].content : <Trans>'Nouveau Match'</Trans>}
                                                     </React.Fragment>
                                                 }
                                             />
@@ -306,11 +327,12 @@ class DiscussionsView extends Component
                         </List>
                     </Grid>
                     {currentDiscussion.profile ? (
-                        <Grid container item sm={6} md={4} lg={6} xs={12} spacing={2}
-                              className={classes.messages}
-                        >
+                        <Grid container item sm={6} md={4} lg={6} xs={12} spacing={2} className={classes.messages} >
+
                             <div className={classes.messagesContainer} id="messages" >
-                                {messages.map((message: Message) => {
+                                {isLoadingMessages ? (<CircularProgress className={classes.progress} color="primary" />) : ''}
+
+                                { messages.map((message: Message) => {
 
                                     let profile;
 
@@ -341,8 +363,7 @@ class DiscussionsView extends Component
                                             </Card>
                                         </Grid>
                                     )
-                                })
-                                }
+                                })}
                             </div>
                             <div className={classes.textAreaContainer}>
                                 <Grid container spacing={0} >

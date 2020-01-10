@@ -87,13 +87,23 @@ class DashBoardView extends Component
 
         this.loadProfiles();
 
+        this.loadFavorites();
+
+        // Reload favorites every minute
+        setInterval(() => {
+            this.loadFavorites()
+        },1000*60);
+    }
+
+
+    public loadFavorites = () => {
         //@ts-ignore
         this.profileService.fetchFavorites().then((favorites : Profile[]) => {
 
             this.setState({favorites: favorites});
 
-        })
 
+        })
     }
 
 

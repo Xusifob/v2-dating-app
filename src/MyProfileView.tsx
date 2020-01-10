@@ -298,4 +298,4 @@ class MyProfileView extends Component
 }
 
 // @ts-ignore
-export default withStyles(useStyles)(MyProfileView);
+export default withStyles(useStyles)(MyProfileView)
