@@ -1,7 +1,5 @@
 import APIService from "./APIService";
 import URLS from "../Resources/URLS";
-import ToastService from "./ToastService";
-
 
 /**
  *
@@ -9,8 +7,6 @@ import ToastService from "./ToastService";
 export default class ConfiguratorService extends APIService
 {
 
-
-    private _toastService : ToastService;
 
 
     /**

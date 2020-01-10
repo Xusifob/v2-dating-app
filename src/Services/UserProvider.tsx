@@ -14,6 +14,9 @@ export default class UserProvider extends APIService
     private _refresh : any;
 
 
+    /**
+     *
+     */
     public loadCurrentUser() : Promise<any>
     {
         let promise = new Promise(((resolve, reject) => {

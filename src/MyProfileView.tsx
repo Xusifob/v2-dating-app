@@ -118,7 +118,7 @@ class MyProfileView extends Component
 
         let value = evt.target.value;
 
-        if(evt.target.type == 'checkbox') {
+        if(evt.target.type === 'checkbox') {
             value = evt.target.checked;
         }
 
@@ -298,4 +298,4 @@ class MyProfileView extends Component
 }
 
 // @ts-ignore
-export default withStyles(useStyles)(MyProfileView)
+export default withStyles(useStyles)(MyProfileView);

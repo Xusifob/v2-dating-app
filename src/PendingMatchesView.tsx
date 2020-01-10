@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
-import {Theme, withStyles} from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import ProfileService from "./Services/ProfileService";
 import UserCard from "./Elements/UserCard";
 import Profile from "./Entities/Profile";
@@ -89,13 +88,13 @@ class PendingMatchesView extends Component
             this.setState({profiles: profiles});
 
         }).catch((response : CustomError) => {
-            if(response.status == 404) {
+            if(response.status === 404) {
                 this.setState({profiles : [new Profile({})]});
                 this.setState({alert : { type : 'error', 'message' : response.error}});
             }
-            if(response.status == 401) {
+            if(response.status === 401) {
                 // Reload profiles, the token is probably refreshed with load
-                if(response.error == 'Expired JWT Token') {
+                if(response.error === 'Expired JWT Token') {
                     this.userProvider.refreshToken().then(() => {
                         this.profileService.setAuthHeader();
                         this.loadProfiles();
@@ -103,7 +102,7 @@ class PendingMatchesView extends Component
                 }
             }
 
-            if(response.status == 406) {
+            if(response.status === 406) {
                 this.setState({redirect: true})
             }
         });

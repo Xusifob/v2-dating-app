@@ -61,7 +61,6 @@ class DashBoardView extends Component
         favorites : [],
         profiles : [],
         redirect : false,
-        app : 'all',
         runBot : false,
         passAll : false,
         likeAll : false,
@@ -121,15 +120,15 @@ class DashBoardView extends Component
         this.setState({isLoading: true});
 
         //@ts-ignore
-        this.profileService.fetchAll(this.state.app).then((profiles : Profile[]) => {
+        this.profileService.fetchAll().then((profiles : Profile[]) => {
 
             this.setState({profiles: profiles});
             this.setState({isLoading: false});
 
         }).catch((response : CustomError) => {
-            if(response.status == 401) {
+            if(response.status === 401) {
                 // Reload profiles, the token is probably refreshed with load
-                if(response.error == 'Expired JWT Token') {
+                if(response.error === 'Expired JWT Token') {
                     this.userProvider.refreshToken().then(() => {
                         this.profileService.setAuthHeader();
                         this.loadProfiles();
@@ -137,7 +136,7 @@ class DashBoardView extends Component
                 }
             }
 
-            if(response.status == 406) {
+            if(response.status === 406) {
                 this.setState({redirect: true})
             }
 
@@ -172,7 +171,7 @@ class DashBoardView extends Component
         let {favorites} = this.state;
         let {profiles} = this.state;
 
-        if(action == 'add-to-favorite') {
+        if(action === 'add-to-favorite') {
             favorites.push(profile);
         } else {
             let Pkey = profiles.indexOf(profile);

@@ -9,6 +9,7 @@ import UserProvider from "./Services/UserProvider";
 import ConfiguratorService from "./Services/ConfiguratorService";
 import AppCard from "./Elements/AppCard";
 import {Container} from "@material-ui/core";
+import APIService from "./Services/APIService";
 
 
 const useStyles = (theme : any) => ({
@@ -36,6 +37,7 @@ class Configure extends Component
 
     protected userProvider : UserProvider;
 
+
     protected configuratorService : ConfiguratorService;
 
     /**
@@ -49,6 +51,7 @@ class Configure extends Component
         this.configuratorService = new ConfiguratorService();
 
         this.configuratorService.getAvailableApps().then((response) => {
+            APIService.apps = response;
             this.setState({apps : response})
         })
 

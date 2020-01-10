@@ -97,6 +97,10 @@ class UserCard extends Component
 
     }
 
+
+    /**
+     *
+     */
     public componentDidMount(): void {
 
         this._ismounted = true;
@@ -105,19 +109,30 @@ class UserCard extends Component
 
     }
 
+
+    /**
+     *
+     */
     public componentWillUnmount(): void {
         this._ismounted = false;
     }
 
 
+    /**
+     *
+     * @param props
+     */
     public componentWillReceiveProps(props)
     {
         this.doActions(props);
     }
 
 
-
-    public doActions = (props) => {
+    /**
+     *
+     * @param props
+     */
+    public doActions = (props) : void => {
 
         // @ts-ignore
         const {hideActions} = this.props;
@@ -134,7 +149,9 @@ class UserCard extends Component
             if(runBot !== this.state.runBot) {
                 this.setState({runBot: runBot});
                 if(runBot) {
-                    this.runBot(user);
+                    setTimeout(() => {
+                        this.runBot(user);
+                    },Math.random()*2500);
                 }
 
             }
@@ -142,14 +159,18 @@ class UserCard extends Component
             if(props.like !== this.state.like) {
                 this.setState({like: props.like});
                 if(props.like) {
-                    this.like();
+                    setTimeout(() => {
+                        this.like();
+                    },Math.random()*3500);
                 }
             }
 
             if(props.disLike !== this.state.disLike) {
                 this.setState({disLike: props.disLike});
                 if(props.disLike) {
-                    this.disLike();
+                    setTimeout(() => {
+                        this.disLike();
+                    },Math.random()*3500);
                 }
             }
             //     },Math.random()*2000)
@@ -163,7 +184,7 @@ class UserCard extends Component
      *
      * @param user
      */
-    public runBot = (user : User) => {
+    public runBot = (user : User) : void => {
 
 
         let to_dislike = false;
@@ -275,7 +296,7 @@ class UserCard extends Component
         // @ts-ignore
         const {profile} = this.state;
 
-        this.profileService.AddToFavorite(profile).then((response) => {
+        this.profileService.addToFavorite(profile).then((response) => {
 
             let profile = new Profile(response);
 

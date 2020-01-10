@@ -13,7 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import TuneIcon from '@material-ui/icons/Tune';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import {IconButton, Link} from "@material-ui/core";
+import {FormControl, IconButton, InputLabel, Link, MenuItem, Select} from "@material-ui/core";
 import {Trans} from "react-i18next";
 import UserProvider from "../Services/UserProvider";
 import {Redirect} from 'react-router';
@@ -23,6 +23,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChatIcon from '@material-ui/icons/Chat';
+import ConfiguratorService from "../Services/ConfiguratorService";
+import APIService from "../Services/APIService";
 
 interface ListItemLinkProps {
     icon?: React.ReactElement;
@@ -34,7 +36,18 @@ const drawerWidth = 240;
 
 const useStyles = (theme : Theme) => ({
     root: {
-        display: 'flex',
+        flexGrow: 1,
+    },
+    title: {
+        flexGrow: 1,
+        display: 'none',
+        [theme.breakpoints.up('sm')]: {
+            display: 'block',
+        },
+    },
+    formControl: {
+        color: 'white',
+        borderColor: 'white',
     },
     appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
@@ -92,7 +105,11 @@ const useStyles = (theme : Theme) => ({
 class Menu extends Component
 {
 
-    public state : any = {logout : false,open : false};
+    public state : any = {
+        logout : false,
+        open : false,
+        app : null,
+    };
 
 
     public userProvider : UserProvider;
@@ -101,6 +118,9 @@ class Menu extends Component
         super(props);
 
         this.userProvider = props.userProvider;
+
+        this.state.app = ConfiguratorService.currentApp;
+
     }
 
     public logOut = () => {
@@ -111,10 +131,27 @@ class Menu extends Component
     };
 
 
+    /**
+     *
+     * @param evt
+     */
+    public handleAppChange = (evt) => {
+        this.setState({app : evt.target.value});
+        APIService.currentApp = evt.target.value;
+
+    }
+
+    /**
+     *
+     */
     public handleDrawerOpen = () => {
         this.setState({open : true});
     }
 
+
+    /**
+     *
+     */
     public handleDrawerClose = () => {
         this.setState({open : false});
     }
@@ -134,6 +171,9 @@ class Menu extends Component
 
         let {open} = this.state;
 
+        let {app} = this.state;
+
+        let apps = APIService.apps;
 
         return (
 
@@ -151,10 +191,39 @@ class Menu extends Component
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" noWrap>
-                            Persistent drawer
+                        <Typography className={classes.title} variant="h6" noWrap>
+                            Dating App Manager
                         </Typography>
+                        <div className={classes.search}>
+                            <FormControl variant="outlined">
+                                <InputLabel id="appType"
+                                            className={classes.formControl}
+                                >
+                                    Application
+                                </InputLabel>
+                                <Select
+                                    labelId="appType"
+                                    id="appType"
+                                    value={app}
+                                    onChange={this.handleAppChange}
+                                    className={classes.formControl}
+                                >
+                                    <MenuItem value="all">
+                                        <em><Trans>Toutes</Trans></em>
+                                    </MenuItem>
+                                    {apps.map((app) => {
+                                        return app.isConfigured ? (
+                                            <MenuItem value={app.app} key={app.app} >
+                                                <em>{app.title}</em>
+                                            </MenuItem>
+                                        ) : '';
+                                    })
+                                    }
+                                </Select>
+                            </FormControl>
+                        </div>
                     </Toolbar>
+
                 </AppBar>
                 <Drawer
                     className={classes.drawer}

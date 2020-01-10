@@ -1,7 +1,5 @@
 import APIService from "./APIService";
 import URLS from "../Resources/URLS";
-import Profile from "../Entities/Profile";
-import Discussions from "../DiscussionsView";
 import Discussion from "../Entities/Discussion";
 import Message from "../Entities/Message";
 
@@ -15,18 +13,14 @@ export default class DiscussionService extends APIService
 
     /**
      *
-     * @param app
+     * Fetch all messages
      */
-    public fetchAll(app : string = 'all')
+    public fetchAll()
     {
 
         let promise = new Promise((resolve : any, reject : any) => {
 
-            let url = URLS.GET_MESSAGES;
-
-            url = url.replace('{app}',app);
-
-            this.getAll(url).then((response : any) => {
+            this.getAll(URLS.GET_MESSAGES).then((response : any) => {
 
                 let discussions = this.parseDiscussions(response);
 
@@ -45,18 +39,13 @@ export default class DiscussionService extends APIService
   /**
      *
      * @param discussion Discussion
-     * @param app
      */
-    public fetchMessages(discussion: Discussion,app : string = 'all')
+    public fetchMessages(discussion: Discussion)
     {
 
         return  new Promise((resolve : any, reject : any) => {
 
-            let url = URLS.GET_MESSAGES;
-
-            url = url.replace('{app}',discussion.app);
-
-            this.get(url,discussion.appId).then((response : any) => {
+            this.get(URLS.GET_MESSAGES,discussion.appId).then((response : any) => {
 
                 let messages = this.parseMessages(response);
 

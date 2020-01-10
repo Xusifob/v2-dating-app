@@ -1,7 +1,6 @@
 import Configuration from '../Resources/Configuration';
 import UserProvider from "./UserProvider";
 import CustomError from "../Entities/CustomError";
-import {Simulate} from "react-dom/test-utils";
 
 
 class APIService {
@@ -37,8 +36,9 @@ class APIService {
      */
     protected async getAll(route : string) : Promise<any> {
 
-        return new Promise(((resolve, reject) => {
+        route = this.parseRoute(route);
 
+        return new Promise(((resolve, reject) => {
 
             return fetch(Configuration.BASE_URL + route, {
                 headers: this.headers
@@ -65,10 +65,25 @@ class APIService {
     /**
      *
      * @param route
+     */
+    protected parseRoute(route : string) : string
+    {
+        let app = APIService.currentApp;
+
+        route = route.replace('{app}',app);
+
+        return route;
+    }
+
+    /**
+     *
+     * @param route
      * @param id
      * @return {Promise<any>}
      */
     protected async get(route : string,id : string|number) {
+
+        route = this.parseRoute(route);
 
         return fetch(Configuration.BASE_URL + route + '/' + id,{
             headers : this.headers
@@ -96,6 +111,8 @@ class APIService {
      */
     protected async post(route : string,newitem : any) : Promise<any>
     {
+
+        route = this.parseRoute(route);
 
         return new Promise(((resolve, reject) => {
 
@@ -134,6 +151,9 @@ class APIService {
      * @return {Promise<Response>}
      */
     protected async delete(route : any,id : string) {
+
+        route = this.parseRoute(route);
+
         return fetch(Configuration.BASE_URL + route + '/' + id,{
             method: "DELETE",
             mode: "cors",
@@ -160,6 +180,8 @@ class APIService {
      * @return {Promise<any>}
      */
     protected async put(route : string, id : any,item : any) {
+
+        route = this.parseRoute(route);
 
         return fetch(Configuration.BASE_URL + route + '/' + id,{
             method: "PUT",
@@ -193,6 +215,64 @@ class APIService {
     handleError(error : any) {
         throw new Error(error.message);
     }
+
+
+    /**
+     *
+     */
+    public static get apps() : any
+    {
+        let u = localStorage.getItem('apps');
+
+        if(u) {
+            try {
+                return JSON.parse(u);
+            }catch (e) {
+                return []
+            }
+        }
+
+        return []
+
+    }
+
+
+    /**
+     *
+     * @param apps
+     */
+    public static set apps(apps: any) {
+        //@ts-ignore
+        localStorage.setItem('apps',JSON.stringify(apps));
+    }
+
+
+    /**
+     *
+     */
+    public static get currentApp() : string
+    {
+        let u = localStorage.getItem('app');
+
+        if(!u) {
+            return 'all';
+        }
+
+        return u;
+
+    }
+
+
+    /**
+     *
+     * @param app
+     */
+    public static set currentApp(app : string) {
+
+        localStorage.setItem('app',app);
+    }
+
+
 }
 
 export default APIService;

@@ -15,7 +15,6 @@ import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
 import {Redirect} from 'react-router';
 import CustomError from "./Entities/CustomError";
-import Profile from "./Entities/Profile";
 import ToastService from "./Services/ToastService";
 
 
@@ -179,7 +178,7 @@ class ConfigureBumble extends Component
                 </Stepper>
                 <Container component="main" fixed maxWidth="xs">
                     <CssBaseline/>
-                    {activeStep == 0 ?
+                    {activeStep === 0 ?
                         <div>
                             <Typography component="h1" variant="h5">
                                 <Trans>Se connecter avec Bumble</Trans>

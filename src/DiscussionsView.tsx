@@ -22,7 +22,6 @@ import CustomError from "./Entities/CustomError";
 import DiscussionService from "./Services/DiscussionService";
 import Discussion from "./Entities/Discussion";
 import CardHeader from "@material-ui/core/CardHeader";
-import CardActionArea from "@material-ui/core/CardActionArea";
 import Avatar from "@material-ui/core/Avatar";
 import Message from "./Entities/Message";
 import UserCard from "./Elements/UserCard";
@@ -31,7 +30,6 @@ import UserProvider from "./Services/UserProvider";
 import Profile from "./Entities/Profile";
 import Picker from 'emoji-picker-react';
 import { animateScroll } from "react-scroll";
-import Backdrop from "@material-ui/core/Backdrop";
 
 
 const useStyles = (theme : Theme) => ({
@@ -176,7 +174,7 @@ class DiscussionsView extends Component
 
         }).catch((error : CustomError) =>  {
 
-            if(error.status != 404 && error.status) {
+            if(error.status !== 404 && error.status) {
                 this.setState({alert: {type: 'error', message: error.error}})
             } else {
 
@@ -336,7 +334,7 @@ class DiscussionsView extends Component
 
                                     let profile;
 
-                                    if(message.profile.appId == currentDiscussion.profile.appId) {
+                                    if(message.profile.appId === currentDiscussion.profile.appId) {
                                         profile = currentDiscussion.profile;
                                     } else {
                                         let user = UserProvider.getUser();

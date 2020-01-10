@@ -10,20 +10,31 @@ export default class ProfileService extends APIService
 {
 
 
-    /**
-     *
-     * @param app
-     */
-    public fetchAll(app : string = 'all')
+
+    public fetchAll()
+    {
+        return this.fetchProfiles(URLS.GET_MATCHES);
+    }
+
+
+    public fetchFavorites()
+    {
+        return this.fetchProfiles(URLS.FAVORITE);
+    }
+
+    public fetchPending()
     {
 
-        let promise = new Promise((resolve : any, reject : any) => {
+        return this.fetchProfiles(URLS.GET_PENDING);
 
-            let url = URLS.GET_MATCHES;
+    }
 
-            url = url.replace('{app}',app);
 
-            this.getAll(url).then((response : any) => {
+    protected fetchProfiles(route) {
+
+        return new Promise((resolve : any, reject : any) => {
+
+            this.getAll(route).then((response : any) => {
 
                 let profiles = this.parseProfiles(response);
 
@@ -34,66 +45,10 @@ export default class ProfileService extends APIService
             })
         });
 
-
-        return promise;
-    }
-
-    /**
-     *
-     * @param app
-     */
-    public fetchPending(app : string = 'all')
-    {
-
-        let promise = new Promise((resolve : any, reject : any) => {
-
-            let url = URLS.GET_PENDING;
-
-            url = url.replace('{app}',app);
-
-            this.getAll(url).then((response : any) => {
-
-                let profiles = this.parseProfiles(response);
-
-                resolve(profiles);
-
-            }).catch((error : any) => {
-                reject(error);
-            })
-        });
-
-
-        return promise;
     }
 
 
-    /**
-     *
-     * @param app
-     */
-    public fetchFavorites(app : string = 'all')
-    {
 
-        let promise = new Promise((resolve : any, reject : any) => {
-
-            let url = URLS.FAVORITE;
-
-            url = url.replace('{app}',app);
-
-            this.getAll(url).then((response : any) => {
-
-                let profiles = this.parseProfiles(response);
-
-                resolve(profiles);
-
-            }).catch((error : any) => {
-                reject(error);
-            })
-        });
-
-
-        return promise;
-    }
 
 
     /**
@@ -116,15 +71,22 @@ export default class ProfileService extends APIService
     }
 
 
+    /**
+     *
+     * @param profile
+     */
     public like(profile : Profile) : Promise<any> {
       return this.post(URLS.LIKE,profile);
     }
 
 
-    public AddToFavorite(profile : Profile) : Promise<any> {
-        let url = URLS.FAVORITE.replace('{app}','all');
-
-        return this.post(url,profile)
+    /**
+     *
+     * @param profile
+     * @constructor
+     */
+    public addToFavorite(profile : Profile) : Promise<any> {
+        return this.post(URLS.FAVORITE,profile)
     }
 
 
@@ -134,17 +96,23 @@ export default class ProfileService extends APIService
      */
     public removeFavorite(profile : Profile) : Promise<any> {
 
-        let url = URLS.FAVORITE.replace('{app}','all');
-
-        return this.delete(url,profile.id);
+        return this.delete(URLS.FAVORITE,profile.id);
     }
 
 
+    /**
+     *
+     * @param profile
+     */
     public superLike(profile : Profile) : Promise<any> {
         return this.post(URLS.SUPERLIKE,profile);
     }
 
 
+    /**
+     *
+     * @param profile
+     */
     public disLike(profile : Profile) : Promise<any> {
         return this.post(URLS.DISLIKE,profile);
     }
